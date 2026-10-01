@@ -61,7 +61,7 @@ export default function Contact() {
           from_name: "Portfolio Contact Form",
           name: f.name.trim(),
           email: f.email.trim(),
-          phone: f.phone.trim() || "Not provided",
+         
           message: f.message.trim(),
           botcheck: bot,
         }),
