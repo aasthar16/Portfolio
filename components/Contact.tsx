@@ -48,11 +48,7 @@ export default function Contact() {
     setErr(errors);
     if (Object.keys(errors).length) return; // invalid: do not submit
 
-    if (WEB3FORMS_ACCESS_KEY === "0fa3de3f-625e-4347-aeab-4707df61510c") {
-      console.error("Contact form: add your Web3Forms access key in components/Contact.tsx");
-      setStatus("error");
-      return;
-    }
+    
 
     setStatus("submitting");
     try {
