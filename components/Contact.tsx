@@ -1,12 +1,15 @@
+
 "use client";
+
 import { useState, FormEvent } from "react";
+
 import { Mail, Phone, Send, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+
 import Section from "./Section";
+
 import { profile } from "@/lib/data";
 
-
-
-   const WEB3FORMS_ACCESS_KEY = "0fa3de3f-625e-4347-aeab-4707df61510c";
+const WEB3FORMS_ACCESS_KEY = "0fa3de3f-625e-4347-aeab-4707df61510c";
 const ENDPOINT = "https://api.web3forms.com/submit";
 
 type Form = { name: string; email: string; phone: string; message: string };
@@ -14,10 +17,15 @@ type Errors = Partial<Record<"name" | "email" | "message", string>>;
 type Status = "idle" | "submitting" | "success" | "error";
 
 const empty: Form = { name: "", email: "", phone: "", message: "" };
-const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+
+const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z]{2,}$/;
 
 const checkEmail = (v: string) =>
-  !v.trim() ? "Please enter your email address." : EMAIL_RE.test(v.trim()) ? undefined : "Please enter a valid email address, for example name@example.com.";
+  !v.trim()
+    ? "Please enter your email address."
+    : EMAIL_RE.test(v.trim())
+      ? undefined
+      : "Please enter a valid email address, for example name@example.com.";
 
 function validate(f: Form): Errors {
   const e: Errors = {};
@@ -48,9 +56,8 @@ export default function Contact() {
     setErr(errors);
     if (Object.keys(errors).length) return; // invalid: do not submit
 
-    
-
     setStatus("submitting");
+
     try {
       const res = await fetch(ENDPOINT, {
         method: "POST",
@@ -61,12 +68,13 @@ export default function Contact() {
           from_name: "Portfolio Contact Form",
           name: f.name.trim(),
           email: f.email.trim(),
-         
           message: f.message.trim(),
           botcheck: bot,
         }),
       });
+
       const data = await res.json();
+
       if (res.ok && data.success) {
         setStatus("success");
         setF(empty);
@@ -80,7 +88,10 @@ export default function Contact() {
   }
 
   const base = "w-full rounded-xl border bg-white/5 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500";
-  const cls = (bad?: string) => `${base} ${bad ? "border-rose-500/70 focus:border-rose-400" : "border-white/10 focus:border-accent"}`;
+
+  const cls = (bad?: string) =>
+    `${base} ${bad ? "border-rose-500/70 focus:border-rose-400" : "border-white/10 focus:border-accent"}`;
+
   const Err = ({ id, msg }: { id: string; msg?: string }) =>
     msg ? <p id={id} role="alert" className="mt-1.5 text-xs text-rose-400">{msg}</p> : null;
 
@@ -93,7 +104,6 @@ export default function Contact() {
           </p>
           {[
             { i: Mail, l: "Email", v: profile.email, h: `mailto:${profile.email}` },
-            { i: Phone, l: "Phone", v: profile.phone, h: `tel:${profile.phone.replace(/\s/g, "")}` },
           ].map(({ i: Icon, l, v, h }) => (
             <a key={l} href={h} className="card flex items-center gap-4 p-4">
               <span className="rounded-full bg-accent/20 p-3 text-accent"><Icon size={18} /></span>
@@ -103,37 +113,93 @@ export default function Contact() {
         </div>
 
         <form onSubmit={submit} noValidate className="card space-y-4 p-6 md:col-span-3">
-          <input type="checkbox" className="hidden" tabIndex={-1} autoComplete="off" checked={bot} onChange={(e) => setBot(e.target.checked)} aria-hidden="true" />
+          <input
+            type="checkbox"
+            className="hidden"
+            tabIndex={-1}
+            autoComplete="off"
+            checked={bot}
+            onChange={(e) => setBot(e.target.checked)}
+            aria-hidden="true"
+          />
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <input className={cls(err.name)} placeholder="Your name" value={f.name} onChange={set("name")} aria-label="Name" aria-invalid={!!err.name} aria-describedby="err-name" disabled={status === "submitting"} />
+              <input
+                className={cls(err.name)}
+                placeholder="Your name"
+                value={f.name}
+                onChange={set("name")}
+                aria-label="Name"
+                aria-invalid={!!err.name}
+                aria-describedby="err-name"
+                disabled={status === "submitting"}
+              />
               <Err id="err-name" msg={err.name} />
             </div>
+
             <div>
               <input
-                className={cls(err.email)} placeholder="Email address" type="email" inputMode="email" autoComplete="email"
-                value={f.email} onChange={set("email")}
+                className={cls(err.email)}
+                placeholder="Email address"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={f.email}
+                onChange={set("email")}
                 onBlur={() => f.email && setErr((p) => ({ ...p, email: checkEmail(f.email) }))}
-                aria-label="Email" aria-invalid={!!err.email} aria-describedby="err-email" disabled={status === "submitting"}
+                aria-label="Email"
+                aria-invalid={!!err.email}
+                aria-describedby="err-email"
+                disabled={status === "submitting"}
               />
               <Err id="err-email" msg={err.email} />
             </div>
           </div>
-          <input className={cls()} placeholder="Phone number (optional)" type="tel" autoComplete="tel" value={f.phone} onChange={set("phone")} aria-label="Phone (optional)" disabled={status === "submitting"} />
+
+          <input
+            className={cls()}
+            placeholder="Phone number (optional)"
+            type="tel"
+            autoComplete="tel"
+            value={f.phone}
+            onChange={set("phone")}
+            aria-label="Phone (optional)"
+            disabled={status === "submitting"}
+          />
+
           <div>
-            <textarea className={`${cls(err.message)} min-h-[140px] resize-y`} placeholder="Your message" value={f.message} onChange={set("message")} aria-label="Message" aria-invalid={!!err.message} aria-describedby="err-message" disabled={status === "submitting"} />
+            <textarea
+              className={`${cls(err.message)} min-h-[140px] resize-y`}
+              placeholder="Your message"
+              value={f.message}
+              onChange={set("message")}
+              aria-label="Message"
+              aria-invalid={!!err.message}
+              aria-describedby="err-message"
+              disabled={status === "submitting"}
+            />
             <Err id="err-message" msg={err.message} />
           </div>
 
-          <button type="submit" disabled={status === "submitting"} className="btn bg-gradient-to-r from-accent to-accent2 text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60">
+          <button
+            type="submit"
+            disabled={status === "submitting"}
+            className="btn bg-gradient-to-r from-accent to-accent2 text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          >
             {status === "submitting" ? <><Loader2 size={16} className="animate-spin" /> Submitting...</> : <><Send size={16} /> Send message</>}
           </button>
 
           {status === "success" && (
-            <p role="status" className="flex items-center gap-2 text-sm text-emerald-400"><CheckCircle2 size={16} /> Message sent successfully! I will get back to you soon.</p>
+            <p role="status" className="flex items-center gap-2 text-sm text-emerald-400">
+              <CheckCircle2 size={16} /> Message sent successfully! I will get back to you soon.
+            </p>
           )}
+
           {status === "error" && (
-            <p role="alert" className="flex items-center gap-2 text-sm text-rose-400"><AlertCircle size={16} /> Something went wrong. Please try again.</p>
+            <p role="alert" className="flex items-center gap-2 text-sm text-rose-400">
+              <AlertCircle size={16} /> Something went wrong. Please try again.
+            </p>
           )}
         </form>
       </div>
